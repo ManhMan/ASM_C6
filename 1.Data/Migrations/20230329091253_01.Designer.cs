@@ -12,7 +12,7 @@ using _1.Data.Context;
 namespace _1.Data.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230322172327_01")]
+    [Migration("20230329091253_01")]
     partial class _01
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,49 @@ namespace _1.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("GiamGia", (string)null);
+                });
+
+            modelBuilder.Entity("_1.Data.Model.GioHang", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("IdKH")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdKH");
+
+                    b.ToTable("GioHang", (string)null);
+                });
+
+            modelBuilder.Entity("_1.Data.Model.GioHangChiTiet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal?>("GiaBan")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("IdGioHang")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("IdSanPham")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("SLMua")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdGioHang");
+
+                    b.HasIndex("IdSanPham");
+
+                    b.ToTable("GioHangChiTiet", (string)null);
                 });
 
             modelBuilder.Entity("_1.Data.Model.HoaDon", b =>
@@ -81,19 +124,25 @@ namespace _1.Data.Migrations
 
             modelBuilder.Entity("_1.Data.Model.HoaDonChiTiet", b =>
                 {
-                    b.Property<Guid>("IdHoaDon")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("IdSanPham")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal?>("GiaBan")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid?>("IdHoaDon")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("IdSanPham")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int?>("SLMua")
                         .HasColumnType("int");
 
-                    b.HasKey("IdHoaDon", "IdSanPham");
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdHoaDon");
 
                     b.HasIndex("IdSanPham");
 
@@ -230,6 +279,30 @@ namespace _1.Data.Migrations
                     b.ToTable("SanPham", (string)null);
                 });
 
+            modelBuilder.Entity("_1.Data.Model.GioHang", b =>
+                {
+                    b.HasOne("_1.Data.Model.KhachHang", "KhachHang")
+                        .WithMany("GioHangs")
+                        .HasForeignKey("IdKH");
+
+                    b.Navigation("KhachHang");
+                });
+
+            modelBuilder.Entity("_1.Data.Model.GioHangChiTiet", b =>
+                {
+                    b.HasOne("_1.Data.Model.GioHang", "GioHang")
+                        .WithMany("GioHangChiTiets")
+                        .HasForeignKey("IdGioHang");
+
+                    b.HasOne("_1.Data.Model.SanPham", "SanPham")
+                        .WithMany("GioHangChiTiets")
+                        .HasForeignKey("IdSanPham");
+
+                    b.Navigation("GioHang");
+
+                    b.Navigation("SanPham");
+                });
+
             modelBuilder.Entity("_1.Data.Model.HoaDon", b =>
                 {
                     b.HasOne("_1.Data.Model.KhachHang", "KhachHang")
@@ -255,15 +328,11 @@ namespace _1.Data.Migrations
                 {
                     b.HasOne("_1.Data.Model.HoaDon", "HoaDon")
                         .WithMany("HoaDonChiTiets")
-                        .HasForeignKey("IdHoaDon")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IdHoaDon");
 
                     b.HasOne("_1.Data.Model.SanPham", "SanPham")
                         .WithMany("HoaDonChiTiets")
-                        .HasForeignKey("IdSanPham")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IdSanPham");
 
                     b.Navigation("HoaDon");
 
@@ -284,6 +353,11 @@ namespace _1.Data.Migrations
                     b.Navigation("HoaDons");
                 });
 
+            modelBuilder.Entity("_1.Data.Model.GioHang", b =>
+                {
+                    b.Navigation("GioHangChiTiets");
+                });
+
             modelBuilder.Entity("_1.Data.Model.HoaDon", b =>
                 {
                     b.Navigation("HoaDonChiTiets");
@@ -291,6 +365,8 @@ namespace _1.Data.Migrations
 
             modelBuilder.Entity("_1.Data.Model.KhachHang", b =>
                 {
+                    b.Navigation("GioHangs");
+
                     b.Navigation("HoaDons");
                 });
 
@@ -306,6 +382,8 @@ namespace _1.Data.Migrations
 
             modelBuilder.Entity("_1.Data.Model.SanPham", b =>
                 {
+                    b.Navigation("GioHangChiTiets");
+
                     b.Navigation("HoaDonChiTiets");
                 });
 #pragma warning restore 612, 618

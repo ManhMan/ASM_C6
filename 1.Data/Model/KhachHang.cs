@@ -17,5 +17,6 @@ namespace _1.Data.Model
         public bool? GioiTinh { get; set; }
         public string? Sdt { get; set; }
         public virtual ICollection<HoaDon>? HoaDons { get; set; }
+        public virtual ICollection<GioHang>? GioHangs { get; set; }
     }
 }

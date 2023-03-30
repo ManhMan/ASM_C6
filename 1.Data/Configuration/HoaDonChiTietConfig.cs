@@ -14,7 +14,7 @@ namespace _1.Data.Configuration
         public void Configure(EntityTypeBuilder<HoaDonChiTiet> builder)
         {
             builder.ToTable("HoaDonChiTiet");
-            builder.HasKey(x => new { x.IdHoaDon, x.IdSanPham });
+            builder.HasKey(x => x.Id);
             builder.HasOne(x => x.HoaDon).WithMany(x => x.HoaDonChiTiets).HasForeignKey(x => x.IdHoaDon);
             builder.HasOne(x => x.SanPham).WithMany(x => x.HoaDonChiTiets).HasForeignKey(x => x.IdSanPham);
         }

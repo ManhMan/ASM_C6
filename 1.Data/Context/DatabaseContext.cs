@@ -27,6 +27,8 @@ namespace _1.Data.Context
         public virtual DbSet<KhachHang> KhachHangs { get; set; }
         public virtual DbSet<NhanVien> NhanViens { get; set; }
         public virtual DbSet<NSX> NSXs { get; set; }
+        public virtual DbSet<GioHang> GioHangs { get; set; }
+        public virtual DbSet<GioHangChiTiet> GioHangChiTiet { get; set; }
         public virtual DbSet<SanPham> SanPhams { get; set; }
 
 
@@ -39,6 +41,8 @@ namespace _1.Data.Context
             modelBuilder.ApplyConfiguration(new NhanVienConfig());
             modelBuilder.ApplyConfiguration(new NSXConfig());
             modelBuilder.ApplyConfiguration(new SanPhamConfig());
+            modelBuilder.ApplyConfiguration(new GioHangConfig());
+            modelBuilder.ApplyConfiguration(new GioHangChiTietConfig());
             
             //modelBuilder.ApplyConfiguration(new ProductInCategoryConfiguration());
 
@@ -47,7 +51,7 @@ namespace _1.Data.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            base.OnConfiguring(optionsBuilder.UseSqlServer("Server=DESKTOP-JNDR021\\SQLEXPRESS;Database=Net106;Trusted_Connection=True;"));
+            base.OnConfiguring(optionsBuilder.UseSqlServer("Server=DESKTOP-JNDR021\\SQLEXPRESS;Database=ASM_C6;Trusted_Connection=True;"));
         }
     }
 }

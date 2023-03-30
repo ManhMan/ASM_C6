@@ -1,0 +1,106 @@
+﻿@page "/viewGiamGia"
+@using _2.API.ViewModels.GiamGia;
+@using _3.Admin.IServices;
+@using _1.Data.Model;
+@using System.Linq;
+@inject IAllServices services
+<h3>ViewGiamGia</h3>
+@if (giamGias == null)
+{
+		<div>
+				<div class="spinner-border"></div>
+		</div>
+}
+else
+{
+			<div class="col-auto ">
+				 <input class="form-control" @onchange="Search" value="@searchInput" type="text" placeholder="Nhập mã giảm giá cần tìm" />
+			</div>
+			<div>
+				<button @onclick="Reset">Reset</button>
+			</div>
+			<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>
+								Mã giảm giá
+							</th>
+							<th>
+								Chi tiết
+							</th>
+							<th>
+								Số lượng còn lại
+							</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+			@foreach (var item in giamGias)
+			{
+									<tr>
+										<td>
+						@item.MaGiamGia
+										</td>
+										<td>
+						@item.MoTaChiTiet
+										</td>
+										<td>
+						@item.SoLuong
+										</td>
+										 <td>
+											<a href="/editsanpham/@item.Id">Edit</a> |
+											<a href="/detailsanpham/@item.Id">Details</a> 
+
+										 </td>
+									 </tr>
+			}
+					</tbody>
+			</table>
+}
+
+
+
+
+@code {
+	private List<GiamGia> giamGias;
+	private List<ViewGiamGia> lst;
+	private string searchInput;
+	protected override async Task OnInitializedAsync()
+	{
+		//giamGias = new List<GiamGia>();
+
+		giamGias = await services.GetAll<GiamGia>("https://localhost:7111/api/GiamGia/Get-All");
+		//lst = (from a in giamGias.ToList()
+		//       select new ViewGiamGia()
+		//           {
+		//               Id = a.Id,
+		//               MaGiamGia = a.MaGiamGia,
+		//               MoTaChiTiet = a.MoTaChiTiet,
+		//               SoLuong = a.SoLuong
+		//           }).ToList();
+
+	}
+
+	private void Search(ChangeEventArgs e)
+	{
+		searchInput = Convert.ToString(e.Value);
+		giamGias = giamGias.Where(p => p.MaGiamGia.ToLower().Contains(searchInput.ToLower())).ToList();
+		if (!string.IsNullOrEmpty(searchInput))
+		{
+			if (giamGias.Count == 0)
+			{
+				giamGias = giamGias;
+			}
+			giamGias = giamGias.Where(p => p.MaGiamGia.ToLower().Contains(searchInput.ToLower())).ToList();
+		}
+		giamGias = giamGias;
+
+	}
+	private async Task Reset()
+	{
+		//giamGias = new List<GiamGia>();
+
+		giamGias = await services.GetAll<GiamGia>("https://localhost:7111/api/GiamGia/Get-All");
+
+	}
+}
