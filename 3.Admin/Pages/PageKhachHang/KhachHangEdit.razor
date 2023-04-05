@@ -1,0 +1,95 @@
+﻿@page "/khachhangedit/{IdKH}"
+@using _1.Data.Model;
+@using _2.API.ViewModels.KhachHang;
+@using _3.Admin.IServices;
+<h3>KhachHangEdit</h3>
+
+
+<EditForm Model="update" OnValidSubmit="UpdateKH" class="card card-body bg-light">
+                <div class="text-danger"><DataAnnotationsValidator /></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12">                                                       
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Họ tên</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="update.Ten" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => update.Ten)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Ngày sinh</label>
+                                <div class="col-md-12">
+                                    <InputDate id="name" class="form-control" @bind-Value="update.NgaySinh" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => update.NgaySinh)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Địa chỉ</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="update.DiaChi" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => update.DiaChi)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Giới tính</label>
+                                <div class="col-md-12">
+                                    <InputSelect class="form-control" @bind-Value="update.GioiTinh">
+                                            <option value="true">Nam</option>
+                                            <option value="false">Nữ</option>
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Số điện thoại</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="update.Sdt" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => update.Sdt)"></ValidationMessage></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-3">
+                            <a href="/MainSanPham" class="btn btn-danger">Quay Lại</a>
+                        </div>
+                        <div class="col-6" style="text-align: center">
+                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+
+                        </div>
+                        
+                    </div>
+                </div>
+            </EditForm>
+@code {
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+    [Inject]
+    public IAllServices services { get; set; }
+
+    [Parameter]
+    public string IdKH { get; set; }
+    private UpdateKhachHang update = new UpdateKhachHang();
+
+    protected async override Task OnInitializedAsync()
+    {
+        var up = await services.GetById<KhachHang>("https://localhost:7111/api/KhachHang/GetById/", Guid.Parse(IdKH));
+
+        update.Ten = up.Ten;
+        update.DiaChi = up.DiaChi;
+        update.Sdt = up.Sdt;
+        update.GioiTinh = up.GioiTinh;
+        update.NgaySinh = up.NgaySinh;
+        
+    }
+    private async Task UpdateKH(EditContext editContext)
+    {
+        var result = await services.Update<UpdateKhachHang>("https://localhost:7111/api/KhachHang/Update/", update, Guid.Parse(IdKH));
+        if (result != null)
+        {
+            NavigationManager.NavigateTo("/khachhangview");
+        }
+
+    }
+}

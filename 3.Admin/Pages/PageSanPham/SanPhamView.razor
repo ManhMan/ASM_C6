@@ -1,0 +1,154 @@
+﻿@page "/sanphamview"
+@using _1.Data.Model;
+@using _3.Admin.Confirm;
+@using _3.Admin.IServices;
+<h3>SanPhamView</h3>
+
+@if (lst == null)
+{
+		<div>
+			<div class="spinner-border"></div>
+		</div>
+}
+else
+{
+						<div class="col-auto ">
+							 <input class="form-control" @onchange="Search" value="@searchInput" type="text" placeholder="Nhập mã giảm giá cần tìm" />
+						</div>
+						<div>
+									<button type="button" class="btn btn-success" @onclick="Reset">Reset</button>
+
+						</div>
+						<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>
+											Tên sản phẩm
+										</th>
+										<th>
+											Nhà sản xuất
+										</th>
+										<th>
+											Giá nhập
+										</th>
+										<th>
+											Giá bán
+										</th>
+										<th>
+											Số lượng tồn
+										</th>
+										<th>
+											Ngày nhập
+										</th>
+										<th>
+											Trạng thái
+										</th>
+										<th>
+											Hình ảnh 
+										</th>
+										
+
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+			@foreach (var item in lst)
+			{
+						<tr>
+								<td>
+									@item.TenSP
+								</td>
+								<td>
+									@(tennsx = lstNSX.FirstOrDefault(p=>p.Id == item.IdNSX).TenNSX)
+								</td>
+								<td>
+									@item.GiaNhap
+								</td>
+								<td>
+									@item.GiaBan
+								</td>
+								<td>
+									@item.SoLuong
+								</td>
+								<td>
+									@item.NgayNhap.ToString();
+								</td>
+								<td>
+									@(item.TrangThai == true ? "Còn hàng" : "Hết hàng")
+								</td>
+								<td>
+									<div class="row">
+									<div class="col-4">
+											<img src="@("/AnhSanPham/"+item.Anh1)" alt="@item.Anh1" width="70" height="70" />
+									</div>
+									
+
+									<div class="col-4">
+											<img src="@("/AnhSanPham/"+item.Anh2)" alt="@item.Anh2" width="70" height="70" />
+									</div>
+
+									<div class="col-4">
+											<img src="@("/AnhSanPham/"+item.Anh3)" alt="@item.Anh3" width="70" height="70" />
+									</div>
+											</div>
+								</td>		
+								
+								<td>
+										<a href="/sanphamedit/@item.Id">Cập nhật</a> |
+										<a href="/sanphamdetail/@item.Id">Chi tiết</a> |
+			
+								</td>
+								</tr>
+			}
+								</tbody>
+						</table>
+	@*<Confirmation ConfirmationMessge="Bạn có chắc muốn xóa"
+              ConfirmationTitle="Thông báo của NASA"
+              @ref="confirmation"
+              ConfirmationChanged="OnConfirmDelete">
+
+				</Confirmation>*@
+						<a href="sanphamcreate" class="btn btn-success">Tạo mới</a>
+}
+@code {
+	private List<SanPham> lst;
+	private List<NSX> lstNSX;
+	protected Confirmation confirmation { get; set; }
+	private Guid ID { get; set; }
+	private string searchInput;
+	private string tennsx;
+	[Inject]
+	public NavigationManager NavigationManager { get; set; }
+	[Inject]
+	public IAllServices services { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		lst = await services.GetAll<SanPham>("https://localhost:7111/api/SanPham/Get-All");
+		lstNSX = await services.GetAll<NSX>("https://localhost:7111/api/NSX/Get-All");
+		
+		
+	}
+
+	private async Task Reset()
+	{
+		lst = await services.GetAll<SanPham>("https://localhost:7111/api/SanPham/Get-All");
+
+	}
+
+	private void Search(ChangeEventArgs e)
+	{
+		searchInput = Convert.ToString(e.Value);
+		lst = lst.Where(p => p.TenSP.ToLower().Contains(searchInput.ToLower())).ToList();
+		if (!string.IsNullOrEmpty(searchInput))
+		{
+			if (lst.Count == 0)
+			{
+				lst = lst;
+			}
+			lst = lst.Where(p => p.TenSP.ToLower().Contains(searchInput.ToLower())).ToList();
+		}
+		lst = lst;
+
+	}
+}

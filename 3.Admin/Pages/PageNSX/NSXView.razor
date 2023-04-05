@@ -1,0 +1,55 @@
+﻿@page "/NSXView"
+@using _3.Admin.Confirm
+<h3>NSXView</h3>
+@if (lstNSX == null)
+{
+			<div>
+					<div class="spinner-border"></div>
+			</div>
+}
+else
+{
+				<div class="col-auto ">
+					 <input class="form-control" @onchange="Search" value="@searchInput" type="text" placeholder="Nhập mã giảm giá cần tìm" />
+				</div>
+				<div>
+							<button type="button" class="btn btn-success" @onclick="Reset">Reset</button>
+
+				</div>
+				<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>
+									Tên NSX
+								</th>
+								
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+			@foreach (var item in lstNSX)
+			{
+											<tr>
+												<td>
+						@item.TenNSX
+												</td>
+						
+												 <td>
+													<a href="/NSXEdit/@item.Id">Cập nhật</a> |
+													<button class="btn btn-danger" @onclick="()=>Delete(item.Id)">Delete</button>
+												 </td>
+											 </tr>
+			}
+						</tbody>
+				</table>
+			<Confirmation ConfirmationMessge="Bạn có chắc muốn xóa"
+              ConfirmationTitle="Thông báo của NASA"
+              @ref="confirmation"
+              ConfirmationChanged="OnConfirmDelete">
+
+			</Confirmation>
+			<a href="NSXCreate" class="btn btn-success">Tạo mới</a>
+}
+@code {
+	
+}

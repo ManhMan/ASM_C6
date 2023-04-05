@@ -1,0 +1,68 @@
+﻿@page "/GiamGiaCreate"
+@using _3.Admin.IServices;
+@using _2.API.ViewModels.GiamGia;
+@inject IAllServices services
+<h3>GiamGiaCreate</h3>
+
+ <EditForm Model="createGiamGia" OnValidSubmit="Create" class="card card-body bg-light">
+                <div class="text-danger"><DataAnnotationsValidator /></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12">                            
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Mã giảm giá</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="createGiamGia.MaGiamGia" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => createGiamGia.MaGiamGia)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Mã giảm giá</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="createGiamGia.MoTaChiTiet" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => createGiamGia.MoTaChiTiet)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Mã giảm giá</label>
+                                <div class="col-md-12">
+                                    <InputNumber id="name" class="form-control" @bind-Value="createGiamGia.SoLuong" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => createGiamGia.SoLuong)"></ValidationMessage></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-3">
+                            <a href="/MainSanPham" class="btn btn-danger">Quay Lại</a>
+                        </div>
+                        <div class="col-6" style="text-align: center">
+                            <button type="submit" class="btn btn-primary">Tạo Mới</button>
+
+                        </div>
+                        <div class="col-3">
+                           <button type="button" class="btn btn-primary float-end" @onclick="() => ClearForm()">Clear Form</button>
+                        </div>
+                    </div>
+                </div>
+ </EditForm>
+
+@code {
+    private CreateGiamGia createGiamGia = new CreateGiamGia();
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+    private async Task Create()
+    {
+        await services.Add<CreateGiamGia>("https://localhost:7111/api/GiamGia/Create", createGiamGia);
+        var url = Path.Combine("/viewGiamGia");
+        NavigationManager.NavigateTo(url);
+    }
+
+    private async Task ClearForm()
+    {
+        createGiamGia.MaGiamGia = null;
+        createGiamGia.MoTaChiTiet = null;
+        createGiamGia.SoLuong = null;
+    }
+}

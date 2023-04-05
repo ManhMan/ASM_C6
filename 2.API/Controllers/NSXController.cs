@@ -56,7 +56,7 @@ namespace _2.API.Controllers
         }
 
         [HttpPost]
-        [Route("Update/id")]
+        [Route("Update/{id}")]
         public async Task<IActionResult> UpdateNSX(Guid id, [FromBody] UpdateNSX request)
         {
             var result = await _repo.GetByIdAsync(id);

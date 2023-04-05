@@ -1,0 +1,104 @@
+﻿@page "/khachhangcreate"
+@using _2.API.ViewModels.KhachHang;
+@using _3.Admin.IServices;
+<h3>Tạo mới khách hàng</h3>
+
+<EditForm Model="create" OnValidSubmit="Create" class="card card-body bg-light">
+                <div class="text-danger"><DataAnnotationsValidator /></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12">                            
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Tài khoản</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="create.TaiKhoan" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.TaiKhoan)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Mật khẩu</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="create.MatKhau" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.MatKhau)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Họ tên</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="create.Ten" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.Ten)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Ngày sinh</label>
+                                <div class="col-md-12">
+                                    <InputDate id="name" class="form-control" @bind-Value="create.NgaySinh" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.NgaySinh)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Địa chỉ</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="create.DiaChi" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.DiaChi)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Giới tính</label>
+                                <div class="col-md-12">
+                                    <InputSelect class="form-control" @bind-Value="create.GioiTinh">
+                                            <option value="true">Nam</option>
+                                            <option value="false">Nữ</option>
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Số điện thoại</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="create.Sdt" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.Sdt)"></ValidationMessage></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-3">
+                            <a href="/MainSanPham" class="btn btn-danger">Quay Lại</a>
+                        </div>
+                        <div class="col-6" style="text-align: center">
+                            <button type="submit" class="btn btn-primary">Tạo Mới</button>
+
+                        </div>
+                        <div class="col-3">
+                           <button type="button" class="btn btn-outline-success float-end" @onclick="() => ClearForm()">Clear Form</button>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+
+@code {
+    private CreateKhachHang create = new CreateKhachHang();
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+    [Inject]
+    public IAllServices services { get; set; }
+
+    private async Task Create()
+    {
+        await services.Add<CreateKhachHang>("https://localhost:7111/api/KhachHang/Create", create);
+        var url = Path.Combine("/khachhangview");
+        NavigationManager.NavigateTo(url);
+    }
+
+    private async Task ClearForm()
+    {
+        create.TaiKhoan = null;
+        create.MatKhau = null;
+        create.Ten = null;
+        create.NgaySinh = null;
+        create.DiaChi = null;
+        create.GioiTinh = null;
+        create.Sdt = null;
+    }
+}

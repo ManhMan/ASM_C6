@@ -1,6 +1,7 @@
 ﻿@page "/viewGiamGia"
 @using _2.API.ViewModels.GiamGia;
 @using _3.Admin.IServices;
+@using _3.Admin.Confirm
 @using _1.Data.Model;
 @using System.Linq;
 @inject IAllServices services
@@ -17,7 +18,8 @@ else
 				 <input class="form-control" @onchange="Search" value="@searchInput" type="text" placeholder="Nhập mã giảm giá cần tìm" />
 			</div>
 			<div>
-				<button @onclick="Reset">Reset</button>
+						<button type="button" class="btn btn-success" @onclick="Reset">Reset</button>
+				
 			</div>
 			<table class="table table-hover">
 					<thead>
@@ -48,14 +50,20 @@ else
 						@item.SoLuong
 										</td>
 										 <td>
-											<a href="/editsanpham/@item.Id">Edit</a> |
-											<a href="/detailsanpham/@item.Id">Details</a> 
-
+											<a href="/GiamGiaEdit/@item.Id">Cập nhật</a> |
+											<button class="btn btn-danger" @onclick="()=>Delete(item.Id)">Delete</button>
 										 </td>
 									 </tr>
 			}
 					</tbody>
 			</table>
+				 <Confirmation ConfirmationMessge="Bạn có chắc muốn xóa"
+              ConfirmationTitle="Thông báo của NASA"
+              @ref="confirmation"
+              ConfirmationChanged="OnConfirmDelete">
+
+		</Confirmation>
+					<a href="GiamGiaCreate" class="btn btn-success">Tạo mới</a>
 }
 
 
@@ -64,21 +72,15 @@ else
 @code {
 	private List<GiamGia> giamGias;
 	private List<ViewGiamGia> lst;
+	protected Confirmation confirmation { get; set; }
+	private Guid IdGG { get; set; }
+	[Inject]
+	public NavigationManager NavigationManager { get; set; }
 	private string searchInput;
+
 	protected override async Task OnInitializedAsync()
 	{
-		//giamGias = new List<GiamGia>();
-
-		giamGias = await services.GetAll<GiamGia>("https://localhost:7111/api/GiamGia/Get-All");
-		//lst = (from a in giamGias.ToList()
-		//       select new ViewGiamGia()
-		//           {
-		//               Id = a.Id,
-		//               MaGiamGia = a.MaGiamGia,
-		//               MoTaChiTiet = a.MoTaChiTiet,
-		//               SoLuong = a.SoLuong
-		//           }).ToList();
-
+		giamGias = await services.GetAll<GiamGia>("https://localhost:7111/api/GiamGia/Get-All");		
 	}
 
 	private void Search(ChangeEventArgs e)
@@ -98,9 +100,25 @@ else
 	}
 	private async Task Reset()
 	{
-		//giamGias = new List<GiamGia>();
-
 		giamGias = await services.GetAll<GiamGia>("https://localhost:7111/api/GiamGia/Get-All");
 
+	}
+
+	public void Delete(Guid id)
+	{
+		IdGG = id;
+		confirmation.Show();
+	}
+
+	private async Task OnConfirmDelete(bool confirm)
+	{
+		if (confirm)
+		{
+			await services.Remove<GiamGia>("https://localhost:7111/api/GiamGia/GetById/",
+		"https://localhost:7111/api/GiamGia/Delete/", IdGG);
+			//var url = Path.Combine("/viewGiamGia");
+			//NavigationManager.NavigateTo(url);
+			giamGias = await services.GetAll<GiamGia>("https://localhost:7111/api/GiamGia/Get-All");
+		}
 	}
 }

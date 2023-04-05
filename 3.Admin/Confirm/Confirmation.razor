@@ -1,0 +1,44 @@
+﻿@if (ShowConfirmation)
+{
+        <div class="modal fade show d-block" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@ConfirmationTitle</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"
+                        @onclick="()=> OnConfirmationChange(false)"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>@ConfirmationMessge</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="()=> OnConfirmationChange(false)">Close</button>
+                        <button type="button" class="btn btn-primary" @onclick="()=> OnConfirmationChange(true)">Xác nhận</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+}
+@code {
+    protected bool ShowConfirmation { get; set; }
+
+    [Parameter]
+    public string ConfirmationTitle { get; set; } = "Xác nhận xóa";
+
+    [Parameter]
+    public string ConfirmationMessge { get; set; } = "Bạn có chắc chắn muốn xóa chứ";
+
+    [Parameter]
+    public EventCallback<bool> ConfirmationChanged { get; set; }
+
+    public void Show()
+    {
+        ShowConfirmation = true;
+        StateHasChanged();
+    }
+    protected async Task OnConfirmationChange(bool value)
+    {
+        ShowConfirmation = false;
+        await ConfirmationChanged.InvokeAsync(value);
+    }
+}

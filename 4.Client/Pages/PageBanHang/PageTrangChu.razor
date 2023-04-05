@@ -1,0 +1,66 @@
+﻿@page "/trangchu"
+@using _1.Data.Model;
+@using _4.Client.IServices;
+
+<div class="container" style="text-align:center">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+
+                <img src="IMG/LogoChuan.jpg" style="height: 12rem; width:24rem" />
+            </a>
+</div>
+@if (lst != null)
+{       
+    <ul class="row" style="list-style: none">
+        @foreach (var item in lst)
+        {
+                    <li class="col-3">               
+                            <div class="card" style="width: 16rem; margin-bottom: 20px">
+                                     <img src="@("/AnhSanPhamCopy/"+item.Anh1)" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <h3 style="text-align:center" class="card-title">@item.TenSP</h3>
+                                    <div class="card-price">
+                                        <p class="">
+                                            <del>Giá gốc : @(item.GiaBan * 2) $ </del>
+                                        </p>
+                                        <p class="">
+                                            Giá SALE : @item.GiaBan $
+                                            
+                                        </p>
+                                        <p class="">
+                                            <b>Trạng thái:@(item.TrangThai == true ? "Còn hàng" : "Hết hàng")</b>
+                                        </p>
+                                        <p>
+                                            <a>Chi tiết sản phẩm</a>
+                                        </p>
+                                    </div>
+
+                                     <a href="addtocard" class="btn btn-primary">Thêm vào giỏ hàng</a>
+                                </div>
+                            </div>                   
+                        </li>
+        }
+    </ul>  
+}
+<div>
+
+</div>
+
+@code {
+    private List<SanPham> lst;
+    private List<NSX> lstNSX;
+    private Guid ID { get; set; }
+    private string searchInput;
+    private string tennsx;
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+    [Inject]
+    public IAllServices services { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        lst = await services.GetAll<SanPham>("https://localhost:7111/api/SanPham/Get-All");
+        lstNSX = await services.GetAll<NSX>("https://localhost:7111/api/NSX/Get-All");
+
+
+    }
+}

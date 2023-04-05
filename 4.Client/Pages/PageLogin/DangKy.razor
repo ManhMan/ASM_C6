@@ -1,0 +1,104 @@
+﻿@page "/dangky"
+@using _1.Data.Context;
+@using _1.Data.Model;
+@using _1.Data.Request;
+@using _4.Client.IServices;
+<h3>Tạo mới khách hàng</h3>
+<EditForm Model="dk" OnValidSubmit="Create" class="card card-body bg-light">
+                <div class="text-danger"><DataAnnotationsValidator /></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12">                            
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Tài khoản</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="dk.TaiKhoan" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => dk.TaiKhoan)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Mật khẩu</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="dk.MatKhau" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => dk.MatKhau)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Họ tên</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="dk.Ten" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => dk.Ten)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Ngày sinh</label>
+                                <div class="col-md-12">
+                                    <InputDate id="name" class="form-control" @bind-Value="dk.NgaySinh" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => dk.NgaySinh)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Địa chỉ</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="dk.DiaChi" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => dk.DiaChi)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Giới tính</label>
+                                <div class="col-md-12">
+                                    <InputSelect class="form-control" @bind-Value="dk.GioiTinh">
+                                            <option value="true">Nam</option>
+                                            <option value="false">Nữ</option>
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Số điện thoại</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="dk.Sdt" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => dk.Sdt)"></ValidationMessage></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-3">
+                            <a href="/login" class="btn btn-danger">Quay Lại</a>
+                        </div>
+                        <div class="col-6" style="text-align: center">
+                            <button type="submit" class="btn btn-primary">Tạo Mới</button>
+
+                        </div>
+                        <div class="col-3">
+                           <button type="button" class="btn btn-outline-success float-end" @onclick="() => ClearForm()">Clear Form</button>
+                           >
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+
+@code {
+    private DangKyRequest dk = new DangKyRequest();
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+    [Inject]
+    public IAllServices services { get; set; } 
+    private async Task Create()
+    {
+        var newKH = await services.Add<DangKyRequest>("https://localhost:7111/api/KhachHang/Create", dk);
+        NavigationManager.NavigateTo("/login");
+    }
+    private async Task ClearForm()
+    {
+        dk.TaiKhoan = null;
+        dk.MatKhau = null;
+        dk.Ten = null;
+        dk.NgaySinh = null;
+        dk.DiaChi = null;
+        dk.GioiTinh = null;
+        dk.Sdt = null;
+    }
+}
+

@@ -1,0 +1,179 @@
+﻿@page "/nhanviencreate"
+@using _1.Data.Model;
+@using _2.API.ViewModels.NhanVien;
+@using _3.Admin.IServices;
+@using Microsoft.JSInterop;
+<h3>Tạo mới nhân viên</h3>
+
+<EditForm Model="create" OnValidSubmit="Create">
+     <div class="text-danger"><DataAnnotationsValidator /></div>
+    @if (errorEmail != null)
+    {
+            <div class="alert alert-danger">@errorEmail</div>
+    }
+    <div class="form-group">
+        <div class="row">
+                <div class="col-12">                            
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Email</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="create.Email" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.Email)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Mật khẩu</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="create.MatKhau" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.MatKhau)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Họ tên</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="create.Ten" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.Ten)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Ngày sinh</label>
+                                <div class="col-md-12">
+                                    <InputDate id="name" class="form-control" @bind-Value="create.NgaySinh" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.NgaySinh)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Địa chỉ</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="create.DiaChi" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.DiaChi)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Giới tính</label>
+                                <div class="col-md-12">
+                                    <InputSelect class="form-control" @bind-Value="create.GioiTinh">
+                                            <option value="true">Nam</option>
+                                            <option value="false">Nữ</option>
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Trạng thái</label>
+                                <div class="col-md-12">
+                                    <InputSelect class="form-control" @bind-Value="create.TrangThai">
+                                            <option value="true">Hoạt động</option>
+                                            <option value="false">Nghỉ việc</option>
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Số điện thoại</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="create.Sdt" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.Sdt)">
+                                    </ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <div class="row">
+                                    <label for="AnhNhanVien" class="control-label">Ảnh</label>
+                                </div>
+
+                                 @if (!string.IsNullOrEmpty(ImageUrl))
+                                    {
+                                    <img src="@ImageUrl" alt="Ảnh Nhân viên" width="100" />
+                                    }
+                                <div class="custom-file mt-2">
+                                <InputFile class="form-control form-control-sm form-control-file"
+                                @bind-Value="create.LinkAnh" OnChange="HandleSelectedFile" />
+                        
+                                </div>
+                            </div>
+
+                </div>
+        </div>   
+    </div>
+    <div class="row mt-4">
+          <div class="col-3">
+                <a href="/MainSanPham" class="btn btn-danger">Quay Lại</a>
+          </div>
+          <div class="col-6" style="text-align: center">
+                <button type="submit" class="btn btn-primary">Tạo Mới</button>
+
+          </div>
+          <div class="col-3">
+                <button type="button" class="btn btn-outline-success float-end" @onclick="() => ClearForm()">Clear Form</button>
+          </div>
+    </div>
+</EditForm>
+
+@code {
+    [Inject] public NavigationManager NavigationManager { get; set; }
+    [Inject] public IAllServices services { get; set; }
+    [Inject] IWebHostEnvironment _webHost { get; set; }
+    private CreateNhanVien create = new CreateNhanVien();
+    //private NhanVienModel model = new NhanVienModel();
+    private List<NhanVien> nhanViens;
+    private string ImageUrl = null;
+    private string errorEmail = null;
+
+
+
+    private async Task HandleSelectedFile(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            var imageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+            ImageUrl = imageUrl;
+
+            string uploadFolder = Path.Combine(_webHost.WebRootPath, "AnhNhanVien");
+            //string uploadFolderClient = Path.Combine("C:\\Users\\Admin\\OneDrive\\Documents\\Desktop\\Project\\Net106_Assignment\\4.Client\\wwwroot\\", "AnhNhanVienClient");
+
+            string folder = Guid.NewGuid().ToString() + "_" + file.Name;
+
+            create.LinkAnh = folder;
+
+            string severfolder = Path.Combine(uploadFolder, folder);
+            //string severfolderClient = Path.Combine(uploadFolderClient, folder);
+
+            await file.OpenReadStream().CopyToAsync(new FileStream(severfolder, FileMode.Create));
+            //await file.OpenReadStream().CopyToAsync(new FileStream(severfolderClient, FileMode.Create));
+        } 
+    }
+
+    private async Task Create()
+    {
+        nhanViens = await services.GetAll<NhanVien>("https://localhost:7111/api/NhanVien/Get-All");
+        var nv = nhanViens.FirstOrDefault(x => x.Email == create.Email);
+        if (nv != null)
+        {
+            errorEmail = "Email đã được sử dụng, hãy nhập email khác";
+        }
+        else
+        {
+            
+            await services.Add<CreateNhanVien>("https://localhost:7111/api/NhanVien/Create", create);
+            //await services.Add("https:localhost:7111/api/NhanVien/", create);
+            NavigationManager.NavigateTo("/nhanvienview");
+
+        }
+
+
+    }
+
+    private async Task ClearForm()
+    {
+        create.Email = null;
+        create.MatKhau = null;
+        create.Ten = null;
+        create.NgaySinh = null;
+        create.DiaChi = null;
+        create.GioiTinh = null;
+        create.Sdt = null;
+        create.LinkAnh = null;
+    }
+}

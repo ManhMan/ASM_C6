@@ -1,0 +1,38 @@
+﻿@page "/NSXCreate"
+
+<h3>NSXCreate</h3>
+
+
+<EditForm Model="create" OnValidSubmit="Create" class="card card-body bg-light">
+                <div class="text-danger"><DataAnnotationsValidator /></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12">                            
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Tên NSX</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="create.TenNSX" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.TenNSX)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            
+
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-3">
+                            <a href="/MainSanPham" class="btn btn-danger">Quay Lại</a>
+                        </div>
+                        <div class="col-6" style="text-align: center">
+                            <button type="submit" class="btn btn-primary">Tạo Mới</button>
+
+                        </div>
+                        <div class="col-3">
+                           <button type="button" class="btn btn-outline-success float-end" @onclick="() => ClearForm()">Clear Form</button>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+@code {
+
+}

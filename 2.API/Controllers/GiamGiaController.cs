@@ -58,7 +58,7 @@ namespace _2.API.Controllers
         }
 
         [HttpPost]
-        [Route("Update/id")]
+        [Route("Update/{id}")]
         public async Task<IActionResult> UpdateGiamGia(Guid id, [FromBody] UpdateGiamGia request)
         {
             var result = await _repo.GetByIdAsync(id);

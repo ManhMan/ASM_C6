@@ -1,0 +1,268 @@
+﻿@page "/sanphamcreate"
+@using _1.Data.Model;
+@using _2.API.ViewModels.SanPham;
+@using _3.Admin.IServices;
+<h3>SanPhamCreate</h3>
+
+<EditForm Model="create" OnValidSubmit="Create">
+     <div class="text-danger"><DataAnnotationsValidator /></div>
+    
+    <div class="form-group">
+        <div class="row">
+                <div class="col-12">                            
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Tên Sản Phẩm</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="create.TenSP" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.TenSP)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Nhà sản xuất</label>
+                                <div class="col-md-12">
+                                    <InputSelect class="form-control" @bind-Value="create.IdNSX">
+                                     @if (lstNSX == null)
+                                     {
+                                         <div class="spinner-border"></div>
+                                     }
+                                     else
+                                     {
+                                        <option value="" selected>Chọn Loại sản phẩm</option>
+                                        @foreach (var item in lstNSX)
+                                            {
+                                                <option value="@item.Id">@item.TenNSX</option>
+                                            }
+                                     }
+                                     </InputSelect>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Ngày nhập</label>
+                                <div class="col-md-12">
+                                    <InputDate id="name" class="form-control" @bind-Value="create.NgayNhap" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.NgayNhap)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Số lượng</label>
+                                <div class="col-md-12">
+                                    <InputNumber id="name" class="form-control" @bind-Value="create.SoLuong" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.SoLuong)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Giá nhập</label>
+                                <div class="col-md-12">
+                                    <InputNumber id="name" class="form-control" @bind-Value="create.GiaNhap" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.GiaNhap)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Giá bán</label>
+                                <div class="col-md-12">
+                                    <InputNumber id="name" class="form-control" @bind-Value="create.GiaBan" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => create.GiaBan)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Trạng thái</label>
+                                <div class="col-md-12">
+                                    <InputSelect class="form-control" @bind-Value="create.TrangThai">
+                                            <option value="true">Còn hàng</option>
+                                            <option value="false">Hết hàng</option>
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            
+                         <div class="form-group pt-2 col-md-12">
+                              <div class="row">
+                                <div class="col-4">
+                                    <div class="row">
+                                        <label for="AnhNhanVien" class="control-label">Ảnh</label>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(ImageUrl1))
+                                    {
+                                        <img src="@ImageUrl1" alt="Ảnh Nhân viên" width="100" />
+                                    }
+                                    <div class="custom-file mt-2">
+                                        <InputFile class="form-control form-control-sm form-control-file"
+                                        @bind-Value="create.Anh1" OnChange="HandleSelectedFile1" />
+
+                                    </div>
+                                </div>
+
+                                <div class="col-4">
+                                    <div class="row">
+                                        <label for="AnhNhanVien" class="control-label">Ảnh</label>
+                                    </div>
+
+                                     @if (!string.IsNullOrEmpty(ImageUrl1))
+                                     {
+                                         <img src="@ImageUrl2" alt="Ảnh Nhân viên" width="100" />
+                                     }
+                                    <div class="custom-file mt-2">
+                                        <InputFile class="form-control form-control-sm form-control-file"
+                                        @bind-Value="create.Anh2" OnChange="HandleSelectedFile2" />
+
+                                    </div>
+                                </div>
+
+                                <div class="col-4">
+                                    <div class="row">
+                                        <label for="AnhNhanVien" class="control-label">Ảnh</label>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(ImageUrl1))
+                                    {
+                                            <img src="@ImageUrl3" alt="Ảnh Nhân viên" width="100" />
+                                    }
+                                    <div class="custom-file mt-2">
+                                        <InputFile class="form-control form-control-sm form-control-file"
+                                        @bind-Value="create.Anh3" OnChange="HandleSelectedFile3" />
+
+                                    </div>
+                                </div>
+                              </div>
+                         </div>
+
+                </div>
+        </div>   
+    </div>
+    <div class="row mt-4">
+          <div class="col-3">
+                <a href="/sanphamview" class="btn btn-danger">Quay Lại</a>
+          </div>
+          <div class="col-6" style="text-align: center">
+                <button type="submit" class="btn btn-primary">Tạo Mới</button>
+
+          </div>
+          <div class="col-3">
+                <button type="button" class="btn btn-outline-success float-end" @onclick="() => ClearForm()">Clear Form</button>
+          </div>
+    </div>
+</EditForm>
+
+@code {
+    [Inject] public NavigationManager NavigationManager { get; set; }
+    [Inject] public IAllServices services { get; set; }
+    [Inject] IWebHostEnvironment _webHost { get; set; }
+    private CreateSanPham create = new CreateSanPham();
+    //private NhanVienModel model = new NhanVienModel();
+    private List<SanPham> sanphams;
+    private List<NSX> lstNSX;
+    private string ImageUrl1 = null;
+    private string ImageUrl2 = null;
+    private string ImageUrl3 = null;
+    private string errorEmail = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        lstNSX = await services.GetAll<NSX>("https://localhost:7111/api/NSX/Get-All");
+    }
+
+    private async Task HandleSelectedFile1(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            var imageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+            ImageUrl1 = imageUrl;
+
+            string uploadFolder = Path.Combine(_webHost.WebRootPath, "AnhSanPham");
+        
+           // string uploadFolderClient = Path.Combine("C:\\Users\\Admin\\OneDrive\\Documents\\Desktop\\Project\\Net106_Assignment\\4.Client\\wwwroot\\", "AnhSanPhamCoppy");
+            string uploadFolderClient = Path.Combine("D:\\FPT POLY\\C#6\\ASM_C6\\4.Client\\wwwroot\\", "AnhSanPhamCopy");
+
+            string folder = Guid.NewGuid().ToString() + "_" + file.Name;
+
+            create.Anh1 = folder;
+
+            string severfolder = Path.Combine(uploadFolder, folder);
+            string severfolderClient = Path.Combine(uploadFolderClient, folder);
+
+            await file.OpenReadStream().CopyToAsync(new FileStream(severfolder, FileMode.Create));
+            await file.OpenReadStream().CopyToAsync(new FileStream(severfolderClient, FileMode.Create));
+        }
+    }
+
+    private async Task HandleSelectedFile2(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            var imageUrl = $"data:image/jpg;base64,{Convert.ToBase64String(buffer)}";
+            ImageUrl2 = imageUrl;
+
+            string uploadFolder = Path.Combine(_webHost.WebRootPath, "AnhSanPham");
+            //string uploadFolderClient = Path.Combine("C:\\Users\\Admin\\OneDrive\\Documents\\Desktop\\Project\\Net106_Assignment\\4.Client\\wwwroot\\", "AnhNhanVienClient");
+
+            string folder = Guid.NewGuid().ToString() + "_" + file.Name;
+
+            create.Anh2 = folder;
+
+            string severfolder = Path.Combine(uploadFolder, folder);
+            //string severfolderClient = Path.Combine(uploadFolderClient, folder);
+
+            await file.OpenReadStream().CopyToAsync(new FileStream(severfolder, FileMode.Create));
+            //await file.OpenReadStream().CopyToAsync(new FileStream(severfolderClient, FileMode.Create));
+        }
+    }
+
+    private async Task HandleSelectedFile3(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            var imageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+            ImageUrl3 = imageUrl;
+
+            string uploadFolder = Path.Combine(_webHost.WebRootPath, "AnhSanPham");
+            //string uploadFolderClient = Path.Combine("C:\\Users\\Admin\\OneDrive\\Documents\\Desktop\\Project\\Net106_Assignment\\4.Client\\wwwroot\\", "AnhNhanVienClient");
+
+            string folder = Guid.NewGuid().ToString() + "_" + file.Name;
+
+            create.Anh3 = folder;
+
+            string severfolder = Path.Combine(uploadFolder, folder);
+            //string severfolderClient = Path.Combine(uploadFolderClient, folder);
+
+            await file.OpenReadStream().CopyToAsync(new FileStream(severfolder, FileMode.Create));
+            //await file.OpenReadStream().CopyToAsync(new FileStream(severfolderClient, FileMode.Create));
+        }
+    }
+
+    private async Task Create()
+    {
+        sanphams = await services.GetAll<SanPham>("https://localhost:7111/api/SanPham/Get-All");
+        
+
+            await services.Add<CreateSanPham>("https://localhost:7111/api/SanPham/Create", create);
+            //await services.Add("https:localhost:7111/api/NhanVien/", create);
+            NavigationManager.NavigateTo("/sanphamview");
+
+        
+
+
+    }
+
+    private async Task ClearForm()
+    {
+        create.TenSP = null;
+        create.IdNSX = null;
+        create.NgayNhap = null;
+        create.GiaBan = null;
+        create.GiaNhap = null;
+        create.TrangThai = null;
+        create.Anh1 = null;
+        create.Anh2 = null;
+        create.Anh3 = null;
+        create.SoLuong = null;
+    }
+}

@@ -1,0 +1,87 @@
+﻿@page "/nhanviendetail/{IdNV}"
+@using _1.Data.Model;
+@using _3.Admin.IServices;
+<h3>NhanVienDetail</h3>
+
+
+<div>
+        <h3>Chi tiết</h3>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                Email
+            </dt>
+            <dd class="col-sm-10">
+            @nv.Email
+            </dd>
+            <dt class="col-sm-2">
+                Mật khẩu
+            </dt>
+            <dd class="col-sm-10">
+            @nv.MatKhau
+            </dd>
+            <dt class="col-sm-2">
+                Tên
+            </dt>
+            <dd class="col-sm-10">
+            @nv.Ten
+            </dd>
+            <dt class="col-sm-2">
+                Ngày sinh
+            </dt>
+            <dd class="col-sm-10">
+            @nv.NgaySinh.ToString();
+            </dd>
+            <dt class="col-sm-2">
+                Địa chỉ
+            </dt>
+            <dd class="col-sm-10">
+            @nv.DiaChi
+            </dd>
+            <dt class="col-sm-2">
+                Giới tính
+            </dt>
+
+            <dd class="col-sm-10">
+            @(nv.GioiTinh == true ? "Nam" : "Nữ")
+            </dd>
+            <dt class="col-sm-2">
+                Trạng thái
+            </dt>
+            <dd class="col-sm-10">
+            @(nv.TrangThai == true ? "Hoạt động" : "Nghỉ việc")
+            </dd>
+            <dt class="col-sm-2">
+                Số điện thoại
+            </dt>
+            <dd class="col-sm-10">
+            @nv.Sdt
+            </dd>
+            <dt class="col-sm-2">
+                Hình ảnh
+            </dt>
+            <dd class="col-sm-10">
+            <img src="@("/AnhNhanVien/"+nv.LinkAnh)" alt="@nv.LinkAnh" width="70" height="70" />
+            </dd>
+            
+
+
+        </dl>
+</div>
+    <div>
+        <a href="/khachhangedit/@nv.Id">Cập nhật</a> |
+        <a href="khachhangview">Quay lại</a>
+    </div>
+@code {
+    [Parameter]
+    public string IdNV { get; set; }
+
+    public NhanVien nv { get; set; } = new NhanVien();
+    [Inject]
+    public IAllServices services { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        nv = await services.GetById<NhanVien>("https://localhost:7111/api/NhanVien/GetById/", Guid.Parse(IdNV));
+    }
+}

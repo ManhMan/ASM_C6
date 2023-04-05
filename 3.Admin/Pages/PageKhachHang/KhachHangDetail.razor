@@ -1,0 +1,73 @@
+﻿@page "/khachhangdetail/{IdKH}"
+@using _1.Data.Model;
+@using _3.Admin.IServices;
+<h3>KhachHangDetail</h3>
+
+<div>
+        <h3>Chi tiết</h3>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                Tài khoản
+            </dt>
+            <dd class="col-sm-10">
+            @kh.TaiKhoan
+            </dd>
+            <dt class="col-sm-2">
+                Mật khẩu
+            </dt>
+            <dd class="col-sm-10">
+            @kh.MatKhau
+            </dd>
+            <dt class="col-sm-2">
+                Tên
+            </dt>
+            <dd class="col-sm-10">
+            @kh.Ten
+            </dd>
+            <dt class="col-sm-2">
+                Ngày sinh
+            </dt>
+            <dd class="col-sm-10">
+            @kh.NgaySinh.ToString();
+            </dd>
+            <dt class="col-sm-2">
+                Địa chỉ
+            </dt>
+            <dd class="col-sm-10">
+                @kh.DiaChi
+            </dd>
+            <dt class="col-sm-2">
+                Giới tính
+            </dt>
+            
+            <dd class="col-sm-10">
+                @(kh.GioiTinh == true ? "Nam" : "Nữ")
+            </dd>
+            <dt class="col-sm-2">
+                Số điện thoại
+            </dt>
+            <dd class="col-sm-10">
+            @kh.Sdt
+            </dd>
+            
+            
+        </dl>
+</div>
+    <div>
+        <a href="/khachhangedit/@kh.Id">Cập nhật</a> |
+        <a href="khachhangview">Quay lại</a>
+    </div>
+@code {
+    [Parameter]
+    public string IdKH { get; set; }
+
+    public KhachHang kh { get; set; } = new KhachHang();
+    [Inject]
+    public IAllServices services { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        kh = await services.GetById<KhachHang>("https://localhost:7111/api/KhachHang/GetById/", Guid.Parse(IdKH));
+    }
+}

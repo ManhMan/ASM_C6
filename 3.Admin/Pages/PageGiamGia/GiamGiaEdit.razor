@@ -1,0 +1,77 @@
+﻿@page "/GiamGiaEdit/{IdGG}"
+@using _3.Admin.IServices;
+@using _2.API.ViewModels.GiamGia;
+@using _1.Data.Model;
+@inject IAllServices services
+@inject IWebHostEnvironment _webHost
+@inject NavigationManager NavigationManager
+
+<h3>Cập nhật Mã giảm giá</h3>
+
+
+<EditForm Model="updateGiamGia" OnValidSubmit="UpdateGiamGia" class="card card-body bg-light">
+                <div class="text-danger"><DataAnnotationsValidator /></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12">                            
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Mã giảm giá</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="updateGiamGia.MaGiamGia" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => updateGiamGia.MaGiamGia)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Mã giảm giá</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="updateGiamGia.MoTaChiTiet" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => updateGiamGia.MoTaChiTiet)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Mã giảm giá</label>
+                                <div class="col-md-12">
+                                    <InputNumber id="name" class="form-control" @bind-Value="updateGiamGia.SoLuong" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => updateGiamGia.SoLuong)"></ValidationMessage></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-3">
+                            <a href="/MainSanPham" class="btn btn-danger">Quay Lại</a>
+                        </div>
+                        <div class="col-6" style="text-align: center">
+                            <button type="submit" class="btn btn-primary">Tạo Mới</button>
+
+                        </div>
+                        
+                    </div>
+                </div>
+            </EditForm>
+@code {
+    [Parameter]
+    public string IdGG { get; set; }
+    private UpdateGiamGia updateGiamGia = new UpdateGiamGia();
+    private List<GiamGia> giamGias;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var up = await services.GetById<GiamGia>("https://localhost:7111/api/GiamGia/GetById/", Guid.Parse(IdGG));
+        
+        updateGiamGia.MaGiamGia = up.MaGiamGia;
+        updateGiamGia.MoTaChiTiet = up.MoTaChiTiet;
+        updateGiamGia.SoLuong = up.SoLuong;
+    }
+    private async Task UpdateGiamGia(EditContext editContext)
+    {
+        var result = await services.Update<UpdateGiamGia>("https://localhost:7111/api/GiamGia/Update/", updateGiamGia, Guid.Parse(IdGG));
+        if (result != null)
+        {
+            NavigationManager.NavigateTo("/viewGiamGia");
+        }
+        
+    }
+
+}

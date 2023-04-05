@@ -12,9 +12,11 @@ namespace _2.API.Controllers
     {
 
         private readonly IAllRepo<KhachHang> _repo;
-        public KhachHangController(IAllRepo<KhachHang> repo)
+        private readonly IAllRepo<GioHang> _ghrepo;
+        public KhachHangController(IAllRepo<KhachHang> repo, IAllRepo<GioHang> ghrepo)
         {
             _repo = repo;
+            _ghrepo = ghrepo;
         }
 
         [HttpGet]
@@ -53,6 +55,12 @@ namespace _2.API.Controllers
             try
             {
                 var result = await _repo.AddOneAsyn(kh);
+                GioHang giohang = new GioHang()
+                {
+                    Id = Guid.NewGuid(),
+                    IdKH = kh.Id
+                };
+                var gh = await _ghrepo.AddOneAsyn(giohang);
                 return Ok(kh);
             }
             catch (Exception ex)
@@ -63,7 +71,7 @@ namespace _2.API.Controllers
         }
 
         [HttpPost]
-        [Route("Update/id")]
+        [Route("Update/{id}")]
         public async Task<IActionResult> UpdateKhachHang(Guid id, [FromBody] UpdateKhachHang request)
         {
             var result = await _repo.GetByIdAsync(id);

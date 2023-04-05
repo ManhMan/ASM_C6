@@ -1,0 +1,291 @@
+﻿@page "/sanphamedit/{IdSP}"
+@using _1.Data.Model;
+@using _2.API.ViewModels.SanPham;
+@using _3.Admin.IServices;
+<h3>SanPhamEdit</h3>
+
+
+<EditForm Model="update" OnValidSubmit="UpdateSP">
+     <div class="text-danger"><DataAnnotationsValidator /></div>
+
+    <div class="form-group">
+        <div class="row">
+                <div class="col-12">                            
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Tên Sản Phẩm</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="update.TenSP" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => update.TenSP)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Nhà sản xuất</label>
+                                <div class="col-md-12">
+                                    <InputSelect class="form-control" @bind-Value="update.IdNSX">
+                            @if (lstNSX == null)
+                            {
+                                             <div class="spinner-border"></div>
+                            }
+                            else
+                            {
+                                            <option value="" selected>Chọn Loại sản phẩm</option>
+                                @foreach (var item in lstNSX)
+                                {
+                                                        <option value="@item.Id">@item.TenNSX</option>
+                                }
+                            }
+                                     </InputSelect>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Ngày nhập</label>
+                                <div class="col-md-12">
+                                    <InputDate id="name" class="form-control" @bind-Value="update.NgayNhap" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => update.NgayNhap)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Số lượng</label>
+                                <div class="col-md-12">
+                                    <InputNumber id="name" class="form-control" @bind-Value="update.SoLuong" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => update.SoLuong)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Giá nhập</label>
+                                <div class="col-md-12">
+                                    <InputNumber id="name" class="form-control" @bind-Value="update.GiaNhap" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => update.GiaNhap)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Giá bán</label>
+                                <div class="col-md-12">
+                                    <InputNumber id="name" class="form-control" @bind-Value="update.GiaBan" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => update.GiaBan)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Trạng thái</label>
+                                <div class="col-md-12">
+                                    <InputSelect class="form-control" @bind-Value="update.TrangThai">
+                                            <option value="true">Còn hàng</option>
+                                            <option value="false">Hết hàng</option>
+                                    </InputSelect>
+                                </div>
+                            </div>
+
+                         <div class="form-group pt-2 col-md-12">
+                              <div class="row">
+                                <div class="col-4">
+                                    <div class="row">
+                                        <label for="name" class="control-label">Ảnh</label>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <img src="@anhcu1" alt="" width="100" height="100" />
+                                        </div>
+                                        
+                                            @if (!string.IsNullOrEmpty(ImageUrl1))
+                                            {
+                                         <div class="col-5">
+                                                        <img src="@ImageUrl1" alt="Ảnh" width="100" height="100" />
+                                          </div>
+                                            }                                                                      
+                                    <div class="custom-file mt-2">
+                                        <InputFile class="form-control form-control-sm form-control-file"
+                                        @bind-Value="update.Anh1" OnChange="HandleSelectedFile1" />
+                                    </div>
+                                    </div>                                                                                                        
+                                </div>
+
+                                <div class="col-4">
+                                    <div class="row">
+                                        <label for="name" class="control-label">Ảnh</label>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <img src="@anhcu2" alt="" width="100" height="100" />
+                                        </div>
+
+                                @if (!string.IsNullOrEmpty(ImageUrl2))
+                                {
+                                             <div class="col-5">
+                                              <img src="@ImageUrl2" alt="Ảnh" width="100" height="100" />
+                                              </div>
+                                }
+
+
+                                    <div class="custom-file mt-2">
+                                        <InputFile class="form-control form-control-sm form-control-file"
+                                        @bind-Value="update.Anh2" OnChange="HandleSelectedFile2" />
+
+                                    </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-4">
+                                    <div class="row">
+                                        <label for="name" class="control-label">Ảnh</label>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <img src="@anhcu3" alt="" width="100" height="100" />
+                                        </div>
+
+                                            @if (!string.IsNullOrEmpty(ImageUrl3))
+                                            {
+                                         <div class="col-5">
+                                              <img src="@ImageUrl3" alt="Ảnh" width="100" height="100" />
+                                         </div>
+                                            }
+                                    <div class="custom-file mt-2">
+                                        <InputFile class="form-control form-control-sm form-control-file"
+                                        @bind-Value="update.Anh3" OnChange="HandleSelectedFile3" />
+
+                                    </div>
+                                    </div>
+
+
+
+                                </div>
+                              </div>
+                         </div>
+
+                </div>
+        </div>   
+    </div>
+          <div class="row mt-4">
+                        <div class="col-3">
+                            <a href="/sanphamview" class="btn btn-danger">Quay Lại</a>
+                        </div>
+                        <div class="col-6" style="text-align: center">
+                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+
+                        </div>
+
+          </div>
+    
+</EditForm>
+@code {
+    [Inject] public NavigationManager NavigationManager { get; set; }
+    [Inject] public IAllServices services { get; set; }
+    [Inject] IWebHostEnvironment _webHost { get; set; }
+    private string ImageUrl1 = null;
+    private string ImageUrl2 = null;
+    private string ImageUrl3 = null;
+    private string anhcu1 = null;
+    private string anhcu2 = null;
+    private string anhcu3 = null;
+    private List<SanPham> sanphams;
+    private List<NSX> lstNSX;
+    [Parameter]
+    public string IdSP { get; set; }
+    private UpdateSanPham update = new UpdateSanPham();
+
+    protected override async Task OnInitializedAsync()
+    {
+        lstNSX = await services.GetAll<NSX>("https://localhost:7111/api/NSX/Get-All");
+        var up = await services.GetById<SanPham>("https://localhost:7111/api/SanPham/GetById/", Guid.Parse(IdSP));
+
+        anhcu1 = "/AnhSanPham/" + up.Anh1;
+        anhcu2 = "/AnhSanPham/" + up.Anh2;
+        anhcu3 = "/AnhSanPham/" + up.Anh3;
+
+        update.TenSP = up.TenSP;
+        update.IdNSX = up.IdNSX;
+        update.NgayNhap = up.NgayNhap;
+        update.SoLuong = up.SoLuong;
+        update.GiaNhap = up.GiaNhap;
+        update.GiaBan = up.GiaBan;
+        update.TrangThai = up.TrangThai;
+        update.Anh1 = up.Anh1;
+        update.Anh2 = up.Anh2;
+        update.Anh3 = up.Anh3;
+    }
+
+    private async Task HandleSelectedFile1(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            var imageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+            ImageUrl1 = imageUrl;
+
+            string uploadFolder = Path.Combine(_webHost.WebRootPath, "AnhSanPham");
+            string uploadFolderClient = Path.Combine("D:\\FPT POLY\\C#6\\ASM_C6\\4.Client\\wwwroot\\", "AnhSanPhamCopy");
+
+            string folder = Guid.NewGuid().ToString() + "_" + file.Name;
+
+            update.Anh1 = folder;
+
+            string severfolder = Path.Combine(uploadFolder, folder);
+            string severfolderClient = Path.Combine(uploadFolderClient, folder);
+
+            await file.OpenReadStream().CopyToAsync(new FileStream(severfolder, FileMode.Create));
+            await file.OpenReadStream().CopyToAsync(new FileStream(severfolderClient, FileMode.Create));
+        }
+    }
+
+    private async Task HandleSelectedFile2(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            var imageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+            ImageUrl2 = imageUrl;
+
+            string uploadFolder = Path.Combine(_webHost.WebRootPath, "AnhSanPham");
+            string uploadFolderClient = Path.Combine("D:\\FPT POLY\\C#6\\ASM_C6\\4.Client\\wwwroot\\", "AnhSanPhamCopy");
+
+            string folder = Guid.NewGuid().ToString() + "_" + file.Name;
+
+            update.Anh2 = folder;
+
+            string severfolder = Path.Combine(uploadFolder, folder);
+            string severfolderClient = Path.Combine(uploadFolderClient, folder);
+
+            await file.OpenReadStream().CopyToAsync(new FileStream(severfolder, FileMode.Create));
+            await file.OpenReadStream().CopyToAsync(new FileStream(severfolderClient, FileMode.Create));
+        }
+    }
+
+    private async Task HandleSelectedFile3(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            var imageUrl = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+            ImageUrl3 = imageUrl;
+
+            string uploadFolder = Path.Combine(_webHost.WebRootPath, "AnhSanPham");
+            string uploadFolderClient = Path.Combine("D:\\FPT POLY\\C#6\\ASM_C6\\4.Client\\wwwroot\\", "AnhSanPhamCopy");
+
+            string folder = Guid.NewGuid().ToString() + "_" + file.Name;
+
+            update.Anh3 = folder;
+
+            string severfolder = Path.Combine(uploadFolder, folder);
+            string severfolderClient = Path.Combine(uploadFolderClient, folder);
+
+            await file.OpenReadStream().CopyToAsync(new FileStream(severfolder, FileMode.Create));
+            await file.OpenReadStream().CopyToAsync(new FileStream(severfolderClient, FileMode.Create));
+        }
+    }
+
+    private async Task UpdateSP(EditContext editContext)
+    {
+        var result = await services.Update<UpdateSanPham>("https://localhost:7111/api/SanPham/Update/", update, Guid.Parse(IdSP));
+        if (result != null)
+        {
+            NavigationManager.NavigateTo("/sanphamview");
+        }
+
+    }
+}

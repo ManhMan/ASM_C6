@@ -1,0 +1,77 @@
+﻿@page "/login"
+@using _1.Data.Model;
+@using _1.Data.Request;
+@using _4.Client.IServices;
+
+<div class="container" style="text-align:center">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+
+                <img src="IMG/LogoChuan.jpg" style="height: 12rem; width:24rem" />
+            </a>
+</div>
+<div style="text-align:center">
+    <h3>Đăng nhập</h3>
+</div>
+<div class="row">
+    <div class="col-3"></div>
+
+    <div class="col-6" style="text-align:center">
+        <EditForm Model="login" OnValidSubmit="Loging">
+        <DataAnnotationsValidator />
+        @if (errorDangNhap != null)
+        {
+            <div class="alert alert-danger">@errorDangNhap</div>
+        }
+    
+        <div class="mb-3">
+        <label class="form-label" for="form2Example18">Nhập tài khoản</label>
+        <InputText id="form2Example18" class="form-control" @bind-Value="login.TaiKhoan"></InputText>
+        <ValidationMessage For="()=>login.TaiKhoan"></ValidationMessage>
+        <small for="Email" class="text-danger"></small>
+        </div>
+
+        <div class="mb-3">
+        <label class="form-label" for="form2Example28">Nhập mật khẩu</label>
+        <InputText id="form2Example28" class="form-control" @bind-Value="login.MatKhau"></InputText>
+        <ValidationMessage For="()=>login.MatKhau"></ValidationMessage>
+        <small for="MatKhau" class="text-danger"></small>
+        </div>
+
+        <div class="mb-3">
+        <button class="btn btn-success" type="submit">Đăng nhập</button>
+        </div>
+    
+    
+        <a href="doimk" class="link-info">Đổi mật khẩu</a><br />        
+        <a href="quenmk" class="link-info">Quên mật khẩu</a><br />
+        <a href="dangky" class="link-info">Đăng ký ngay</a><br />
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Inject] public NavigationManager NavigationManager { get; set; }
+    [Inject] public IAllServices services { get; set; }
+    private LoginRequest login = new LoginRequest();
+    private List<KhachHang> khachHangs;
+    private string errorDangNhap;
+    private async Task Loging(EditContext editContext)
+    {
+        khachHangs = await services.GetAll<KhachHang>("https://localhost:7111/api/KhachHang/Get-All");
+        var kh = khachHangs.FirstOrDefault(x => x.TaiKhoan == login.TaiKhoan && x.MatKhau == login.MatKhau);
+        if (kh == null)
+        {
+            errorDangNhap = "Sai tài khoản hoặc mật khẩu";
+        }
+        else
+        {
+            //var lstGH = await services.GetAll<GioHang>("https://localhost:7111/api/GioHangs/Get-All");
+            //var gh = lstGH.FirstOrDefault(x => x.IdKH == kh.Id);
+
+            //await JSRuntime.InvokeAsync<object>("sessionStorage.setItem", "idgh", gh.Id.ToString());
+            //await JSRuntime.InvokeAsync<object>("sessionStorage.setItem", "idkh", kh.Id.ToString());
+            //await JSRuntime.InvokeAsync<object>("sessionStorage.setItem", "ten", kh.Ten);
+            NavigationManager.NavigateTo("/trangchu");
+        }
+    }
+}

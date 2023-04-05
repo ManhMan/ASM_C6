@@ -1,0 +1,159 @@
+﻿@page "/nhanvienview"
+@using _1.Data.Model;
+@using _3.Admin.Confirm;
+@using _3.Admin.IServices;
+<h3>Quản lý nhân viên</h3>
+
+@if (lst == null)
+{
+				<div>
+						<div class="spinner-border"></div>
+				</div>
+}
+else
+{
+					<div class="col-auto ">
+						 <input class="form-control" @onchange="Search" value="@searchInput" type="text" placeholder="Nhập mã giảm giá cần tìm" />
+					</div>
+					<div>
+								<button type="button" class="btn btn-success" @onclick="Reset">Reset</button>
+
+					</div>
+					<table class="table table-hover">
+							<thead>
+								<tr>
+									<th>
+										Hình ảnh
+									</th>
+									<th>
+										Email
+									</th>
+									<th>
+										Mật khẩu
+									</th>
+									<th>
+										Tên
+									</th>
+									<th>
+										Ngày sinh
+									</th>
+									<th>
+										Địa chỉ
+									</th>
+									<th>
+										Giới tính
+									</th>
+									<th>
+										Trạng thái
+									</th>
+									<th>
+										Số điện thoại
+									</th>
+									
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+			@foreach (var item in lst)
+			{
+						<tr>
+								<td>
+									<img src="@("/AnhNhanVien/"+item.LinkAnh)" alt="@item.LinkAnh" width="70" />
+								</td>
+								<td>
+									@item.Email
+								</td>
+								<td>
+									@item.MatKhau
+								</td>
+								<td>
+									@item.Ten
+								</td>
+								<td>
+									@item.NgaySinh
+								</td>
+								<td>
+									@item.DiaChi
+								</td>
+								<td>
+									@(item.GioiTinh == true ? "Nam" : "Nữ")
+								</td>
+								<td>
+									@(item.TrangThai == true ? "Hoạt động" : "Nghỉ việc") 
+								</td>							
+								<td>
+									@item.Sdt
+								</td>
+								
+
+								<td>
+									<a href="/nhanvienedit/@item.Id">Cập nhật</a> |
+									<a href="/nhanviendetail/@item.Id">Chi tiết</a> |
+									@*<button class="btn btn-danger" @onclick="()=>Delete(item.Id)">Cho nghỉ việc</button>*@
+								</td>
+						</tr>
+			}
+							</tbody>
+					</table>
+						 @*<Confirmation ConfirmationMessge="Bạn có chắc muốn xóa"
+              ConfirmationTitle="Thông báo của NASA"
+              @ref="confirmation"
+              ConfirmationChanged="OnConfirmDelete">
+
+				</Confirmation>*@
+								<a href="nhanviencreate" class="btn btn-success">Tạo mới</a>
+}
+
+@code {
+	private List<NhanVien> lst;
+	protected Confirmation confirmation { get; set; }
+	private Guid ID { get; set; }
+	private string searchInput;
+	[Inject]
+	public NavigationManager NavigationManager { get; set; }
+	[Inject]
+	public IAllServices services { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		lst = await services.GetAll<NhanVien>("https://localhost:7111/api/NhanVien/Get-All");
+	}
+
+	private async Task Reset()
+	{
+		lst = await services.GetAll<NhanVien>("https://localhost:7111/api/NhanVien/Get-All");
+
+	}
+
+	//public void Delete(Guid id)
+	//{
+	//	ID = id;
+	//	confirmation.Show();
+	//}
+
+	//private async Task OnConfirmDelete(bool confirm)
+	//{
+	//	if (confirm)
+	//	{
+	//	//	await services.Remove<NhanVien>("https://localhost:7111/api/NhanVien/GetById/",
+	//	//"https://localhost:7111/api/NhanVien/Delete/", ID);
+	//		lst = await services.GetAll<NhanVien>("https://localhost:7111/api/NhanVien/Get-All"); ;
+	//	}
+	//}
+
+	private void Search(ChangeEventArgs e)
+	{
+		searchInput = Convert.ToString(e.Value);
+		lst = lst.Where(p => p.Ten.ToLower().Contains(searchInput.ToLower())).ToList();
+		if (!string.IsNullOrEmpty(searchInput))
+		{
+			if (lst.Count == 0)
+			{
+				lst = lst;
+			}
+			lst = lst.Where(p => p.Ten.ToLower().Contains(searchInput.ToLower())).ToList();
+		}
+		lst = lst;
+
+	}
+}

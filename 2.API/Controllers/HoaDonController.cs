@@ -61,7 +61,7 @@ namespace _2.API.Controllers
         }
 
         [HttpPost]
-        [Route("Update/id")]
+        [Route("Update/{id}")]
         public async Task<IActionResult> UpdateHoaDon(Guid id, [FromBody] UpdateHoaDon request)
         {
             var result = await _repo.GetByIdAsync(id);
