@@ -74,6 +74,7 @@ namespace _2.API.Controllers
                 result.IdSanPham = request.IdSanPham;
                 result.SLMua = request.SLMua;
                 result.GiaBan = request.GiaBan;
+                //result.SLMua++;
                 try
                 {
                     await _repo.UpdateOneAsyn(result);

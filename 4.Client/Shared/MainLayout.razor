@@ -7,7 +7,8 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>*@
+            <p>@ten</p>
         </div>
 
         <article class="content px-4">
@@ -15,3 +16,13 @@
         </article>
     </main>
 </div>
+@code{
+    [Inject] public IJSRuntime JSRuntime { get; set; }
+    private string ten;
+    protected override async Task OnInitializedAsync()
+    {
+        
+        ten = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "ten");
+
+    }
+}

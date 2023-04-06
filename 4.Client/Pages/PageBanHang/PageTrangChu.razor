@@ -9,7 +9,7 @@
             </a>
 </div>
 @if (lst != null)
-{       
+{           
     <ul class="row" style="list-style: none">
         @foreach (var item in lst)
         {
@@ -34,7 +34,7 @@
                                         </p>
                                     </div>
 
-                                     <a href="addtocard" class="btn btn-primary">Thêm vào giỏ hàng</a>
+                                             <a href="addtocard" class="btn btn-primary" @onclick="()=>addtocard(item.Id)">Thêm vào giỏ hàng</a>
                                 </div>
                             </div>                   
                         </li>
@@ -51,16 +51,25 @@
     private Guid ID { get; set; }
     private string searchInput;
     private string tennsx;
+    private string idkh;
+    private string idgh;
     [Inject]
     public NavigationManager NavigationManager { get; set; }
     [Inject]
     public IAllServices services { get; set; }
+    [Inject] public IJSRuntime JSRuntime { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         lst = await services.GetAll<SanPham>("https://localhost:7111/api/SanPham/Get-All");
         lstNSX = await services.GetAll<NSX>("https://localhost:7111/api/NSX/Get-All");
+        
 
+    }
+    public async Task addtocard(Guid id)
+    {
+        idkh = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "idkh");
+        idgh = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "idgh");
 
     }
 }

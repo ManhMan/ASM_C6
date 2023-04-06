@@ -2,7 +2,6 @@
 @using _1.Data.Model;
 @using _1.Data.Request;
 @using _4.Client.IServices;
-
 <div class="container" style="text-align:center">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
 
@@ -52,9 +51,22 @@
 @code {
     [Inject] public NavigationManager NavigationManager { get; set; }
     [Inject] public IAllServices services { get; set; }
+    [Inject] public IJSRuntime JSRuntime { get; set; }
     private LoginRequest login = new LoginRequest();
     private List<KhachHang> khachHangs;
+    //private List<KhachHang> khachHangs;
     private string errorDangNhap;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var a = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "idkh");
+        if (a != null)
+        {
+            NavigationManager.NavigateTo("/loilogin");
+        }
+
+
+    }
     private async Task Loging(EditContext editContext)
     {
         khachHangs = await services.GetAll<KhachHang>("https://localhost:7111/api/KhachHang/Get-All");
@@ -65,13 +77,15 @@
         }
         else
         {
-            //var lstGH = await services.GetAll<GioHang>("https://localhost:7111/api/GioHangs/Get-All");
-            //var gh = lstGH.FirstOrDefault(x => x.IdKH == kh.Id);
+            var lstGH = await services.GetAll<GioHang>("https://localhost:7111/api/GioHang/Get-All");
+            var gh = lstGH.FirstOrDefault(p => p.IdKH == kh.Id);
+    
+            await JSRuntime.InvokeAsync<string>("sessionStorage.setItem", "idkh", kh.Id.ToString());
+            
+            await JSRuntime.InvokeAsync<string>("sessionStorage.setItem", "idgh", gh.Id.ToString());
 
-            //await JSRuntime.InvokeAsync<object>("sessionStorage.setItem", "idgh", gh.Id.ToString());
-            //await JSRuntime.InvokeAsync<object>("sessionStorage.setItem", "idkh", kh.Id.ToString());
-            //await JSRuntime.InvokeAsync<object>("sessionStorage.setItem", "ten", kh.Ten);
-            NavigationManager.NavigateTo("/trangchu");
+            await JSRuntime.InvokeAsync<string>("sessionStorage.setItem", "ten", kh.Ten);
+            NavigationManager.NavigateTo("/");
         }
     }
 }

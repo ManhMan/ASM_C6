@@ -1,9 +1,117 @@
 ﻿@page "/"
+@using _1.Data.Model;
+@using _1.Data.Request;
+@using _4.Client.IServices;
 
-<PageTitle>Index</PageTitle>
+<div class="container" style="text-align:center">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
 
-<h1>Hello, world!</h1>
+                <img src="IMG/LogoChuan.jpg" style="height: 12rem; width:24rem" />
+            </a>
+</div>
+@if (lst != null)
+{       
+    <h1>@idkh</h1>
+    <ul class="row" style="list-style: none">            
+        @foreach (var item in lst)
+        {
+                    <li class="col-3">               
+                            <div class="card" style="width: 16rem; margin-bottom: 20px">
+                                     <img src="@("/AnhSanPhamCopy/"+item.Anh1)" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <h3 style="text-align:center" class="card-title">@item.TenSP</h3>
+                                    <div class="card-price">
+                                        <p class="">
+                                            <del>Giá gốc : @(item.GiaBan * 2) $ </del>
+                                        </p>
+                                        <p class="">
+                                            Giá SALE : @item.GiaBan $
+                                            
+                                        </p>
+                                        <p class="">
+                                            <b>Trạng thái:@(item.TrangThai == true ? "Còn hàng" : "Hết hàng")</b>
+                                        </p>
+                                        <p>
+                                            <a>Chi tiết sản phẩm</a>
+                                        </p>
+                                    </div>
 
-Welcome to your new app.
+                                             <a class="btn btn-primary" @onclick="()=>addtocard(item.Id)">Thêm vào giỏ hàng</a>
+                                </div>
+                            </div>                   
+                        </li>
+        }
+    </ul>  
+}
+<div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+</div>
+
+@code {
+    private List<SanPham> lst;
+    private List<NSX> lstNSX;
+    private string searchInput;
+    private string tennsx;
+    private string idkh;
+    private string idgh;
+    private string errorSl;
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+    [Inject]
+    public IAllServices services { get; set; }
+    [Inject] public IJSRuntime JSRuntime { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        lst = await services.GetAll<SanPham>("https://localhost:7111/api/SanPham/Get-All");
+        lstNSX = await services.GetAll<NSX>("https://localhost:7111/api/NSX/Get-All");
+
+
+    }  
+    public async Task addtocard(Guid id)
+    {
+        idkh = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "idkh");
+        idgh = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "idgh");
+
+        if (idkh == null)
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            var gh = await services.GetById<GioHang>("https://localhost:7111/api/GioHang/GetById/", Guid.Parse(idgh));
+            var sp = await services.GetById<SanPham>("https://localhost:7111/api/SanPham/GetById/", id);
+
+            var lstghct = await services.GetAll<GioHangChiTiet>("https://localhost:7111/api/GioHangChiTiet/Get-All");
+
+            var ghct = lstghct.FirstOrDefault(p => p.IdSanPham == sp.Id && p.IdGioHang == Guid.Parse(idgh));
+            if (ghct == null)
+            {
+                GioHangChiTietCreate create = new GioHangChiTietCreate()
+                    {
+                        GiaBan = sp.GiaBan,
+                        SLMua = 1,
+                        IdGioHang = Guid.Parse(idgh),
+                        IdSanPham = sp.Id
+                    };
+                await services.Add<GioHangChiTietCreate>("https://localhost:7111/api/GioHangChiTiet/Create", create);
+                NavigationManager.NavigateTo("/giohang");
+            }
+            else
+            {
+                if (ghct.SLMua > sp.SoLuong)
+                {
+                    errorSl = "Vượt quá số lượng trong kho";
+                    await JSRuntime.InvokeAsync<object>("showAlert", errorSl, 1);
+                }
+                else
+                {
+                    ghct.SLMua++;
+                    await services.Update("https://localhost:7111/api/GioHangChiTiet/Update/", ghct, ghct.Id);
+                    NavigationManager.NavigateTo("/giohang");
+                }
+            }
+        }
+      
+    }
+}

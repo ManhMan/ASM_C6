@@ -1,6 +1,196 @@
 ﻿@page "/giohang"
-<h3>Giỏ hàng của bạn</h3>
+@using _1.Data.Model;
+@using _1.Data.Request;
+@using _4.Client.IServices;
+
+<div style="text-align:center">
+	<h3>Giỏ hàng của bạn</h3>
+</div>
+			<table class="table table-hover">
+							<thead>
+								<tr>
+									<th>
+										Hình ảnh
+									</th>
+									<th>
+										Tên sản phẩm
+									</th>
+									<th>
+										Nhà sản xuất
+									</th>
+									<th>
+										
+										Số lượng
+										
+									</th>
+									<th>
+										Giá
+									</th>
+									<th>
+										Thành tiền
+									</th>
+									<th>
+										Thông tin
+									</th>
+									<th>
+										Xóa
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+						@foreach (var item in lst)
+						{
+						<tr>
+							<td>
+								<div class="col-4"><img src="@("/AnhSanPhamCopy/"+@item.LinkAnh1)" alt="@item.LinkAnh1" width="80" height="80" /></div>
+							</td>
+							<td>
+								@(sanphams.FirstOrDefault(p => p.Id == item.IdSanPham).TenSP)
+							</td>
+							<td>
+								@item.TenNSX
+								
+							</td>
+							<td>
+								<button @onclick="@(()=> Giam(item.Id))" type="button" class="btn btn-danger">-</button>
+								
+								@item.SLMua
+
+								<button @onclick="@(()=> Tang(item.Id))" type="button" class="btn btn-danger">+</button>
+							</td>
+							<td>
+								@item.GiaBan
+							</td>
+							<td>
+								@(item.GiaBan*item.SLMua)
+							</td>		
+							<td>
+								<a href="/chitietsp/@item.IdSanPham">Chi tiết</a>
+							</td>
+							<td>
+									<button @onclick="@(()=> Xoa(item.Id))" type="button" class="btn btn-danger">Xóa</button>
+							</td>
+						</tr>
+						}
+							</tbody>
+					</table>
+
+
+<div class="row ">
+  <div class="col-3">
+	<label for="" class="col-form-label">Password</label>
+  </div>
+  <div class="col-6">
+	<input type="text" id="" class="form-control" aria-describedby="">
+  </div>
+  <div class="col-3">
+	<button type="button" class="btn btn-success">Áp dụng</button>
+  </div>
+</div>
+<br />
+<div class="row">
+	<div class="col-4"><h4>Tổng tiền</h4></div>
+	<div class="col-4"></div>
+	<div class="col-4"><h4>@tongtien</h4></div>
+</div>
+
 
 @code {
 	//trong này là các giỏ hàng chi tiết.
+	[Inject] public NavigationManager NavigationManager { get; set; }
+	[Inject] public IAllServices services { get; set; }
+	[Inject] public IJSRuntime JSRuntime { get; set; }
+	public string idgh;
+	public decimal thanhtien;
+	public decimal tongtien;
+	public string error;
+	private List<GioHangChiTiet> gioHangChiTiets = new List<GioHangChiTiet>();
+	private List<SanPham> sanphams =new List<SanPham>(); 
+	private List<NSX> nsxs = new List<NSX>(); 
+	private List<ViewGioHang> lst = new List<ViewGioHang>(); 
+
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "idkh");
+		if (result == null)
+		{
+			NavigationManager.NavigateTo("/loilogin");
+		}
+		else
+		{
+			idgh = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "idgh");
+			gioHangChiTiets = await services.GetAll<GioHangChiTiet>("https://localhost:7111/api/GioHangChiTiet/Get-All");
+			sanphams = await services.GetAll<SanPham>("https://localhost:7111/api/SanPham/Get-All");
+			nsxs = await services.GetAll<NSX>("https://localhost:7111/api/NSX/Get-All");
+			lst = (from a in gioHangChiTiets
+							join b in sanphams on a.IdSanPham equals b.Id
+							join c in nsxs on b.IdNSX equals c.Id
+							where a.IdGioHang == Guid.Parse(idgh)
+							select new ViewGioHang()
+					   {
+						   Id = a.Id,
+						   IdGioHang = a.IdGioHang,
+						   IdSanPham = a.IdSanPham,
+						   SLMua = a.SLMua,
+						   GiaBan = a.GiaBan,
+						   TenNSX = c.TenNSX,
+						   LinkAnh1 = b.Anh1,
+						   LinkAnh2 = b.Anh2,
+						   LinkAnh3 = b.Anh3
+					   }
+			).ToList();
+			tongtien = 0;
+			var ls = gioHangChiTiets.Where(x => x.IdGioHang ==Guid.Parse(idgh));
+			foreach (var item in ls)
+			{
+				tongtien += Convert.ToDecimal(item.SLMua * item.GiaBan);
+			}
+		}
+
+		
+	}
+
+	public async Task Tang(Guid id)
+	{
+		var ghct = gioHangChiTiets.FirstOrDefault(p => p.Id == id);
+		var sp = sanphams.FirstOrDefault(p => p.Id == ghct.IdSanPham);
+		ghct.SLMua++;
+		if (ghct.SLMua > sp.SoLuong)
+		{
+			error = "Vượt quá số lượng trong kho";
+			await JSRuntime.InvokeAsync<object>("showAlert", error, 1);
+		}
+		else
+		{
+			await services.Update("https://localhost:7111/api/GioHangChiTiet/Update/", ghct, id);
+			await OnInitializedAsync();
+		}
+		
+	}
+
+	public async Task Giam(Guid id)
+	{
+		var ghct = gioHangChiTiets.FirstOrDefault(p => p.Id == id);
+		var sp = sanphams.FirstOrDefault(p => p.Id == ghct.IdSanPham);
+		--ghct.SLMua;
+		if (ghct.SLMua <= 0)
+		{
+			error = "Bạn không mua gì à ????";
+			await JSRuntime.InvokeAsync<object>("showAlert", error, 1);
+		}
+		else
+		{
+			await services.Update("https://localhost:7111/api/GioHangChiTiet/Update/", ghct, id);
+			await OnInitializedAsync();
+		}
+	}
+		
+	private async Task Xoa(Guid id)
+	{
+		var ghct = gioHangChiTiets.FirstOrDefault(p => p.Id == id);
+
+		await services.Remove<GioHangChiTiet>("https://localhost:7111/api/GioHangChiTiet/GetById/",
+		"https://localhost:7111/api/GioHangChiTiet/Delete/", id);
+		await OnInitializedAsync();
+	}
 }
