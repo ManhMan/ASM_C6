@@ -14,7 +14,7 @@ namespace _1.Data.Request
         public string? TaiKhoan { get; set; }
 
         [Required(ErrorMessage = "Không được để trống")]
-
+        [StringLength(30, MinimumLength = 6, ErrorMessage = "Mật khẩu ít nhất 6 ký tự")]
         public string? MatKhau { get; set; }
 
         [Required(ErrorMessage = "Không được để trống")]

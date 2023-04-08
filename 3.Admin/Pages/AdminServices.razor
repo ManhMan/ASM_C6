@@ -1,0 +1,27 @@
+﻿@page "/allAdmin"
+<h3>AdminServices</h3>
+<h1>@name</h1>
+<div class="row" style="text-align:center">
+	<div class="col-3">
+		<a href="viewGiamGia" class="btn btn-success">QL Giảm giá</a>
+	</div>
+	<div class="col-3">
+		<a href="NSXView" class="btn btn-success">QL NSX</a>
+	</div>
+	<div class="col-3">
+		<a href="sanphamview" class="btn btn-success">QL Sản phẩm</a>
+	</div>
+	<div class="col-3">
+		<a href="nhanvienview" class="btn btn-success">QL Nhân viên</a>
+	</div>
+</div>
+
+@code {
+	[Inject] public IJSRuntime JSRuntime { get; set; }
+	public string name;
+	protected override async Task OnInitializedAsync()
+	{
+		name = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "tennv");
+
+	}
+}

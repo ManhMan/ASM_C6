@@ -1,6 +1,92 @@
 ﻿@page "/doimk"
-<h3>DoiMk</h3>
+@using _1.Data.Model;
+@using _1.Data.Request;
+@using _4.Client.IServices;
+<h3>Thay đổi mật khẩu</h3>
+
+<EditForm Model="dmk" OnValidSubmit="DoiMatKhau" class="card card-body bg-light">
+                <div class="text-danger"><DataAnnotationsValidator /></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12">                            
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Nhập Tài khoản</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="dmk.TaiKhoan" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => dmk.TaiKhoan)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Nhập Mật khẩu cũ</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="dmk.MatKhau" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => dmk.MatKhau)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Nhập mật khẩu mới</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="dmk.MatKhauMoi" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => dmk.MatKhauMoi)"></ValidationMessage></div>
+                                </div>
+                            </div>                           
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Nhập lại mật khẩu mới</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="dmk.ConfirmPass" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => dmk.ConfirmPass)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-3">
+                            <a href="/login" class="btn btn-danger">Quay Lại</a>
+                        </div>
+                        <div class="col-6" style="text-align: center">
+                            <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+
+                        </div>
+                        
+                    </div>
+                </div>
+</EditForm>
 
 @code {
+    private DoiMkRequest dmk = new DoiMkRequest();
+    private List <KhachHang> kh = new List<KhachHang>();
+    public string error;
+    public string ok;
+    [Inject] public NavigationManager NavigationManager { get; set; }
+    [Inject] public IAllServices services { get; set; }
+    [Inject] public IJSRuntime JSRuntime { get; set; }
 
+
+    private async Task DoiMatKhau()
+    {
+
+        kh = await services.GetAll<KhachHang>("https://localhost:7111/api/KhachHang/Get-All");
+        var checktk = kh.ToList().FirstOrDefault(p => p.TaiKhoan == dmk.TaiKhoan && p.MatKhau == dmk.MatKhau);
+        if (checktk == null)
+        {
+            error = "Thông tin không chính xác, vui lòng kiểm tra lại";
+            await JSRuntime.InvokeAsync<object>("showAlert", error, 1);
+        }
+        else
+        {
+            if (dmk.ConfirmPass == dmk.MatKhauMoi)
+            {
+                checktk.MatKhau = dmk.MatKhauMoi;
+                await services.Update("https://localhost:7111/api/KhachHang/Update/", checktk, checktk.Id);
+                ok = "Đổi thành công, mật khẩu mới của bạn là" + dmk.MatKhauMoi;
+
+                await JSRuntime.InvokeAsync<object>("showAlert", ok, 1);
+            }
+            else
+            {
+                error = "Kiểm tra lại mật khẩu mới, hãy nhập lại chính xác";
+            }
+
+        }
+    }
 }

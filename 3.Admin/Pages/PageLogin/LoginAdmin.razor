@@ -1,0 +1,82 @@
+﻿@page "/adminlogin"
+@using _1.Data.Model;
+@using _1.Data.Request;
+@using _3.Admin.IServices;
+
+
+<div style="text-align:center">
+    <h3>Đăng nhập</h3>
+</div>
+<div class="row">
+    <div class="col-3"></div>
+
+    <div class="col-6" style="text-align:center">
+        <EditForm Model="login" OnValidSubmit="AdminLoging">
+        <DataAnnotationsValidator />
+            @if (errorDangNhap != null)
+            {
+                <div class="alert alert-danger">@errorDangNhap</div>
+            }
+
+        <div class="mb-3">
+        <label class="form-label" for="form2Example18">Nhập tài khoản</label>
+        <InputText id="form2Example18" class="form-control" @bind-Value="login.TaiKhoan"></InputText>
+        <ValidationMessage For="()=>login.TaiKhoan"></ValidationMessage>
+        <small for="Email" class="text-danger"></small>
+        </div>
+
+        <div class="mb-3">
+        <label class="form-label" for="form2Example28">Nhập mật khẩu</label>
+        <InputText id="form2Example28" class="form-control" @bind-Value="login.MatKhau"></InputText>
+        <ValidationMessage For="()=>login.MatKhau"></ValidationMessage>
+        <small for="MatKhau" class="text-danger"></small>
+        </div>
+
+        <div class="mb-3">
+        <button class="btn btn-success" type="submit">Đăng nhập</button>
+        </div>
+
+
+        <a href="doimk" class="link-info">Đổi mật khẩu</a><br />        
+        <a href="quenmk" class="link-info">Quên mật khẩu</a><br />
+        <a href="dangky" class="link-info">Đăng ký ngay</a><br />
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    [Inject] public NavigationManager NavigationManager { get; set; }
+    [Inject] public IAllServices services { get; set; }
+    [Inject] public IJSRuntime JSRuntime { get; set; }
+    private LoginRequest login = new LoginRequest();
+    private List<NhanVien> nvs;
+    //private List<KhachHang> khachHangs;
+    private string errorDangNhap;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var a = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "idnv");
+        if (a != null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+
+
+    }
+    private async Task AdminLoging(EditContext editContext)
+    {
+        nvs = await services.GetAll<NhanVien>("https://localhost:7111/api/NhanVien/Get-All");
+        var nv = nvs.FirstOrDefault(x => x.Email == login.TaiKhoan && x.MatKhau == login.MatKhau);
+        if (nv == null)
+        {
+            errorDangNhap = "Sai tài khoản hoặc mật khẩu";
+        }
+        else
+        {            
+            await JSRuntime.InvokeAsync<string>("sessionStorage.setItem", "idnv", nv.Id.ToString());
+            await JSRuntime.InvokeAsync<string>("sessionStorage.setItem", "tennv", nv.Ten);
+            NavigationManager.NavigateTo("/allAdmin");
+        }
+    }
+}

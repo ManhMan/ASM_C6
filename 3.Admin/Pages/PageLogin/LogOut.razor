@@ -1,0 +1,26 @@
+﻿@page "/logout"
+@using _3.Admin.Confirm;
+@using _3.Admin.IServices;
+
+@*<Confirmation ConfirmationMessge="Bạn có chắc muốn Đăng xuất"
+              ConfirmationTitle="Thông báo của NASA"
+              @ref="confirmation"
+              ConfirmationChanged="OnConfirm">
+ </Confirmation>*@
+
+@code {
+    [Inject] public NavigationManager NavigationManager { get; set; }
+    [Inject] public IAllServices services { get; set; }
+    [Inject] public IJSRuntime JSRuntime { get; set; }
+    protected Confirmation confirmation { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+    await JSRuntime.InvokeAsync<object>("sessionStorage.removeItem", "idnv");
+    await JSRuntime.InvokeAsync<object>("sessionStorage.removeItem", "tennv");
+    NavigationManager.NavigateTo("/");
+    }
+
+    
+}

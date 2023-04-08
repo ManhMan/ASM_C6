@@ -1,6 +1,69 @@
 ﻿@page "/quenmk"
-<h3>QuenMk</h3>
+@using _1.Data.Model;
+@using _1.Data.Request;
+@using _4.Client.IServices;
+<div style="text-align:center">
+                <h3>Bạn quên mật khẩu à</h3>
+</div>
+
+<EditForm Model="request" OnValidSubmit="LayLaiMK" class="card card-body bg-light">
+                <div class="text-danger"><DataAnnotationsValidator /></div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-12">                            
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Nhập Tài khoản</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="request.TaiKhoan" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => request.TaiKhoan)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            <div class="form-group pt-2 col-md-12">
+                                <label for="name" class="col-md-6 col-form-label">Nhập số điện thoại</label>
+                                <div class="col-md-12">
+                                    <InputText id="name" class="form-control" @bind-Value="request.SDT" />
+                                    <div class="text-danger"><ValidationMessage For="@(() => request.SDT)"></ValidationMessage></div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-3">
+                            <a href="/login" class="btn btn-danger">Quay Lại</a>
+                        </div>
+                        <div class="col-6" style="text-align: center">
+                            <button type="submit" class="btn btn-primary">Lấy lại mật khẩu</button>
+
+                        </div>
+
+                    </div>
+                </div>
+</EditForm>
+
 
 @code {
+    private LayLaiMkRequest request = new LayLaiMkRequest();
+    private List<KhachHang> kh = new List<KhachHang>();
+    public string error;
+    public string ok;
+    [Inject] public NavigationManager NavigationManager { get; set; }
+    [Inject] public IAllServices services { get; set; }
+    [Inject] public IJSRuntime JSRuntime { get; set; }
 
+    public async Task LayLaiMK()
+    {
+        kh = await services.GetAll<KhachHang>("https://localhost:7111/api/KhachHang/Get-All");
+        var tk = kh.ToList().FirstOrDefault(p => p.TaiKhoan == request.TaiKhoan && p.Sdt == request.SDT);
+        if (tk == null)
+        {
+            error = "Thông tin không chính xác, vui lòng kiểm tra lại";
+            await JSRuntime.InvokeAsync<object>("showAlert", error, 1);
+        }
+        else
+        {
+            ok = "Mật khẩu của bạn là :" + tk.MatKhau;
+            await JSRuntime.InvokeAsync<object>("showAlert", ok, 1);
+        }
+    }
 }

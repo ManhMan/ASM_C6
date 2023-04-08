@@ -14,5 +14,8 @@ namespace _2.API.ViewModels.KhachHang
         public bool? GioiTinh { get; set; }
         [Required(ErrorMessage = "Không được để trống")]
         public string? Sdt { get; set; }
+        [Required(ErrorMessage = "Không được để trống")]
+        public string? MatKhau { get; set; }
+        
     }
 }

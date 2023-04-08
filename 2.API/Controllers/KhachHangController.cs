@@ -86,6 +86,7 @@ namespace _2.API.Controllers
                 result.Sdt = request.Sdt;
                 result.DiaChi = request.DiaChi;
                 result.GioiTinh= request.GioiTinh;
+                result.MatKhau= request.MatKhau;
                 try
                 {
                     await _repo.UpdateOneAsyn(result);
